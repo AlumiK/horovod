@@ -53,11 +53,11 @@ Status MPIAllreduce::Execute(std::vector<TensorTableEntry>& entries, const Respo
   timeline.ActivityStartAll(entries, MPI_ALLREDUCE);
   const void* sendbuf = entries.size() > 1 || fused_input_data == buffer_data
                         ? MPI_IN_PLACE : fused_input_data;
-  int op = MPI_Allreduce(sendbuf, buffer_data,
-                         (int) num_elements,
-                         mpi_context_->GetMPIDataType(first_entry.tensor),
-                         mpi_context_->GetMPISumOp(first_entry.tensor->dtype()),
-                         mpi_context_->GetMPICommunicator(Communicator::GLOBAL));
+  int op = nkmpi::Allreduce(sendbuf, buffer_data,
+                            (int) num_elements,
+                            mpi_context_->GetMPIDataType(first_entry.tensor),
+                            mpi_context_->GetMPISumOp(first_entry.tensor->dtype()),
+                            mpi_context_->nkmpi_ctx);
   if (op != MPI_SUCCESS) {
     throw std::runtime_error("MPI_Allreduce failed, see MPI output for details.");
   }

@@ -20,6 +20,7 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <nkmpi.h>
 
 #include "../common.h"
 #include "../half.h"
@@ -82,6 +83,9 @@ struct MPIContext {
 
   // Cross-node communicator for hierarchical allreduce.
   MPI_Comm cross_comm;
+
+  // NKMPI context.
+  nkmpi::Context nkmpi_ctx;
 
   // MPI Window used for shared memory allgather
   MPI_Win window;

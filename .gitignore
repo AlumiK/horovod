@@ -19,3 +19,4 @@ examples/**/checkpoint*
 horovod/tensorflow/mpi_lib.so
 horovod/torch/test_cuda/
 
+compatible_gloo/

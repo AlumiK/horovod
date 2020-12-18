@@ -161,6 +161,10 @@ void MPIContext::Initialize(const std::vector<int>& ranks,
 
   // Create custom MPI float16 summation op.
   MPI_Op_create(&float16_sum, 1, &mpi_float16_sum);
+
+  // Create NKMPI communicators.
+  const std::vector<int> dims{2, 4, 4};
+  nkmpi_ctx.Init(mpi_comm, dims);
 }
 
 void MPIContext::Finalize(MPIContextManager& ctx_manager) {

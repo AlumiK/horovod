@@ -136,6 +136,8 @@ if (NOT "$ENV{HOROVOD_WITHOUT_MPI}" STREQUAL "1")
     if(MPI_FOUND)
         include_directories(SYSTEM ${MPI_INCLUDE_PATH})
         list(APPEND LINKER_LIBS ${MPI_LIBRARIES})
+        find_library(NKMPI_LIB nkmpi)
+        list(APPEND LINKER_LIBS ${NKMPI_LIB})
         list(APPEND SOURCES "${PROJECT_SOURCE_DIR}/horovod/common/mpi/mpi_context.cc"
                 "${PROJECT_SOURCE_DIR}/horovod/common/mpi/mpi_controller.cc"
                 "${PROJECT_SOURCE_DIR}/horovod/common/ops/mpi_operations.cc"
