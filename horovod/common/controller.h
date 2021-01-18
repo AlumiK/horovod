@@ -116,7 +116,16 @@ public:
     }
   };
 
+  // Set dims that will be used to create NKMPI communicator.
+  void SetDims(const int* dims, int ndims) {
+    dims_.clear();
+    for (auto i = 0; i < ndims; ++i) {
+      dims_.push_back(dims[i]);
+    }
+  };
+
   std::vector<int>& GetRanks() { return ranks_; };
+  std::vector<int>& GetDims() { return dims_; };
   int GetRank() { return rank_; };
   int GetLocalRank() { return local_rank_; };
   int GetCrossRank() { return cross_rank_; };
@@ -189,6 +198,9 @@ protected:
 
   // ranks of the horovod world
   std::vector<int> ranks_;
+
+  // dims of the NKMPI world
+  std::vector<int> dims_;
 
   // COMM_WORLD ranks of processes running on this node.
   std::vector<int> local_comm_ranks_;

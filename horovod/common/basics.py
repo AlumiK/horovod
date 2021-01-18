@@ -30,14 +30,18 @@ class HorovodBasics(object):
         self.Sum = self.MPI_LIB_CTYPES.horovod_reduce_op_sum()
         self.Adasum = self.MPI_LIB_CTYPES.horovod_reduce_op_adasum()
 
-    def init(self, comm=None):
+    def init(self, dims=None, comm=None):
         """A function that initializes Horovod.
 
         Args:
+          dims: List specifying dims for the NKMPI context.
           comm: List specifying ranks for the communicator, relative to the MPI_COMM_WORLD
             communicator OR the MPI communicator to use. Given communicator will be duplicated.
             If None, Horovod will use MPI_COMM_WORLD Communicator.
         """
+        if dims is None:
+            dims = []
+        dims_size = len(dims)
         if comm is None:
             comm = []
 
@@ -58,11 +62,19 @@ class HorovodBasics(object):
                 self.MPI_LIB_CTYPES.horovod_init_comm.argtypes = [MPI_Comm]
 
             comm_obj = MPI_Comm.from_address(MPI._addressof(comm))
-            self.MPI_LIB_CTYPES.horovod_init_comm(comm_obj)
+            self.MPI_LIB_CTYPES.horovod_init_comm(
+                comm_obj
+                (ctypes.c_int * dims_size)(*dims),
+                ctypes.c_int(dims_size)
+            )
         else:
             comm_size = len(comm)
             self.MPI_LIB_CTYPES.horovod_init(
-                (ctypes.c_int * comm_size)(*comm), ctypes.c_int(comm_size))
+                (ctypes.c_int * comm_size)(*comm),
+                ctypes.c_int(comm_size),
+                (ctypes.c_int * dims_size)(*dims),
+                ctypes.c_int(dims_size)
+            )
 
     def shutdown(self):
         """A function that shuts Horovod down."""

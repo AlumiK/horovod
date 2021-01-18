@@ -84,6 +84,7 @@ int MPIContext::GetMPITypeSize(DataType dtype) {
 }
 
 void MPIContext::Initialize(const std::vector<int>& ranks,
+                            std::vector<int>& dims,
                             MPIContextManager& ctx_manager) {
 
   if (!enabled_) {
@@ -163,7 +164,11 @@ void MPIContext::Initialize(const std::vector<int>& ranks,
   MPI_Op_create(&float16_sum, 1, &mpi_float16_sum);
 
   // Create NKMPI communicators.
-  const std::vector<int> dims{2, 4, 4};
+  int size;
+  MPI_Comm_size(mpi_comm, &size);
+  if (dims.empty()) {
+    dims.push_back(size);
+  }
   nkmpi_ctx.Init(mpi_comm, dims);
 }
 

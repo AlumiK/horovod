@@ -52,6 +52,7 @@ struct MPIContext {
   // Take an argument of context manager pointer that will take care of
   // initialization of MPI environment.
   void Initialize(const std::vector<int>& ranks,
+                  std::vector<int>& dims,
                   MPIContextManager& ctx_manager);
 
   // Take an argument of context manager pointer that will take care of

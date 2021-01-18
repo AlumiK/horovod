@@ -13,11 +13,15 @@
 # limitations under the License.
 # ==============================================================================
 
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Disable TensorFlow logging.
+
 import tensorflow as tf
 import horovod.tensorflow as hvd
 
 # Horovod: initialize Horovod.
-hvd.init()
+# `dims` and `comm` are optional.
+hvd.init([2, 4, 4])
 
 # Horovod: pin GPU to be used to process local rank (one GPU per process)
 gpus = tf.config.experimental.list_physical_devices('GPU')

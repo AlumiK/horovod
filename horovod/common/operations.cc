@@ -372,7 +372,9 @@ void BackgroundThreadLoop(HorovodGlobalState& state) {
   // Otherwise, let MPI ops be in charge.
   auto mpi_ctx_manager = MPIContextManager();
 #endif
-  mpi_context.Initialize(state.controller->GetRanks(), mpi_ctx_manager);
+  mpi_context.Initialize(state.controller->GetRanks(),
+                         state.controller->GetDims(),
+                         mpi_ctx_manager);
 #endif
 
 #if HAVE_GLOO
@@ -648,7 +650,8 @@ bool RunLoopOnce(HorovodGlobalState& state) {
 
 // Start Horovod background thread. Ensure that this is
 // only done once no matter how many times this function is called.
-void InitializeHorovodOnce(const int* ranks, int nranks) {
+void InitializeHorovodOnce(const int* ranks, int nranks,
+                           const int* dims, int ndims) {
   // Ensure background thread is only started once.
   if (!horovod_global.initialize_flag.test_and_set()) {
     horovod_global.control_operation = ParseControllerOpsFromEnv();
@@ -667,6 +670,7 @@ void InitializeHorovodOnce(const int* ranks, int nranks) {
           horovod_global.parameter_manager, horovod_global.group_table,
           mpi_context));
       horovod_global.controller->SetRanks(ranks, nranks);
+      horovod_global.controller->SetDims(dims, ndims);
     }
 #endif
 
@@ -709,14 +713,14 @@ Status CheckInitialized() {
 
 extern "C" {
 
-void horovod_init(const int* ranks, int nranks) {
-  InitializeHorovodOnce(ranks, nranks);
+void horovod_init(const int* ranks, int nranks, const int* dims, int ndims) {
+  InitializeHorovodOnce(ranks, nranks, dims, ndims);
 }
 
 #if HAVE_MPI
-void horovod_init_comm(MPI_Comm comm) {
+void horovod_init_comm(MPI_Comm comm, const int* dims, int ndims) {
   MPI_Comm_dup(comm, &mpi_context.mpi_comm);
-  InitializeHorovodOnce(nullptr, 0);
+  InitializeHorovodOnce(nullptr, 0, dims, ndims);
 }
 #endif
 
